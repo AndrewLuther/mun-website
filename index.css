@@ -1,0 +1,40 @@
+body {
+    font-family: Garamond;
+    width:50%;
+    margin: auto;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    width: 100%;
+    color: black;
+}
+
+h2 {
+    width: 100%;
+    color: black;
+    font-size: 18px; 
+}
+
+p {
+    width: 100%;
+    color: black;
+}
+
+#canvas {
+
+    margin: 2rem;
+    background-color: rgb(204, 202, 202);
+    border: 2px solid black;
+
+}
+
+button {
+    background-color: grey;
+    border-radius: 8px;
+    margin-top: 2rem;
+}

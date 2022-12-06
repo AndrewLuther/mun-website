@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="index.css">
+</head>
+<title>Andrew Luther</title>
+<body>
+
+  <h1>Andrew Luther</h1>
+  <h2>Senior Computer Science Student</h2>
+  <h2>Programmer/Analyst at Compusult ltd.</h2>
+
+  <button onclick=startGame()>Start Game</button>
+  <button onclick=endGame()>Stop Game</button>
+
+  <canvas id="canvas" width="512" height="512">
+  </canvas>
+
+  <h2>Points: </h2><h2 id = "pointNumber"></h2>
+
+  <script>
+    const CANVAS_WIDTH = 512;
+    const CANVAS_HEIGHT = 512;
+    let points = [];
+    let myInterval = null;
+    let gameStarted = false;
+    let player;
+    const canvas = document.getElementById("canvas");
+    let currentDirection;
+    let pointsGained;
+    const pointElement = document.getElementById("pointNumber");
+    let intervalValue;
+
+    function startGame() { //TODO this shouldn't trigger on every press
+      if (gameStarted == false) {
+        //initialize variables
+        pointsGained = 0;
+        pointElement.textContent = pointsGained;
+        gameStarted = true;
+        currentDirection = "right";
+        intervalValue = 10;
+        player = new createPlayer()
+        player.draw();
+        myInterval = setInterval(function () {
+          movePlayer();
+        }, intervalValue)
+        drawPoint();
+      }
+      
+    }
+
+    function changeInterval(newValue) {
+      clearInterval(myInterval);
+      myInterval = setInterval(function () {
+          movePlayer();
+        }, newValue)
+    }
+
+    function endGame() {
+      gameStarted = false;
+      clearInterval(myInterval);
+      points = []; // clear out the points
+    }
+
+    function createPlayer() {
+        this.width = 10;
+        this.height = 10;
+        this.x = 0;
+        this.y = 0;
+
+       
+        this.draw = () => {
+          ctx = canvas.getContext("2d");
+          ctx.fillStyle = "green";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        this.move = (x, y) => {
+          this.x += x;
+          this.y += y;
+        }
+
+        this.checkPointCollision = () => {
+          for (point of points) {
+            if (Math.abs(this.x - point.x) < 10 & Math.abs(this.y - point.y) < 10) {
+
+              points.pop(point);
+              drawPoint();
+              increasePoints();
+              intervalValue = intervalValue/1.5; // speed up by 50%
+              changeInterval(intervalValue);
+            }
+          }
+        }
+
+        this.checkGameOver = () => {
+          if (this.x < 0 || this.x > (CANVAS_WIDTH-this.width)) {
+            endGame();
+          }
+          if (this.y < 0 || this.y > (CANVAS_HEIGHT-this.height)) {
+            endGame();
+          }
+        }
+    }
+
+    function increasePoints() {
+      pointsGained += 1;
+      pointElement.textContent = pointsGained;
+    }
+
+    function createPoint() {
+      this.width = 10;
+      this.height = 10;
+      this.x = Math.floor(Math.random()*(CANVAS_WIDTH-this.width)) + 1;
+      this.y = Math.floor(Math.random()*(CANVAS_HEIGHT-this.height)) + 1;
+
+      this.draw = () => {
+        ctx = canvas.getContext("2d");
+        ctx.fillStyle = "red";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+      }
+    }
+
+    function drawPoint() {
+      const point = new createPoint();
+      points.push(point);
+      updateCanvas();
+    }
+
+    function updateCanvas() {
+      ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+      player.draw();
+      for (point of points) {
+        point.draw();
+      }
+      player.checkPointCollision();
+      player.checkGameOver();
+    }
+
+    function movePlayer() {
+      switch (currentDirection) {
+        case "down":
+          player.move(0, 1);
+          break;
+        case "up":
+          player.move(0, -1);
+          break;
+        case "left":
+          player.move(-1, 0);
+          break;
+        case "right":
+          player.move(1, 0);
+          break;
+      }
+
+      updateCanvas();
+
+    }
+
+
+  // input handeling  
+  window.addEventListener("keydown", function (event) { // from https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript 
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        currentDirection = "down";
+        break;
+      case "ArrowUp":
+        currentDirection = "up";
+        break;
+      case "ArrowLeft":
+        currentDirection = "left";
+        break;
+      case "ArrowRight":
+        currentDirection = "right";
+        break;
+      default:
+        return;
+    }
+
+
+    // Cancel the default action to avoid it being handled twice
+    event.preventDefault();
+  }, true);
+
+  </script>
+
+
+
+</body>
+
+
+
+
+
+</html>
